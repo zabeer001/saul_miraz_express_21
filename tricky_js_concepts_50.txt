@@ -1,0 +1,51 @@
+Spread vs Rest Operator
+Destructuring (Array & Object)
+Optional Chaining (?.)
+Nullish Coalescing (??)
+this Keyword
+Closures
+Hoisting
+Promises & Async/Await
+Event Loop & Microtasks
+Call, Apply, Bind
+Prototypes & Inheritance
+Type Coercion
+IIFE (Immediately Invoked Function Expression)
+Debouncing & Throttling
+Currying
+Generators & Iterators
+Symbols & Unique Keys
+Map, Set, WeakMap, WeakSet
+Deep vs Shallow Copy
+Module Import/Export
+new Keyword & Constructor Functions
+instanceof vs typeof
+Event Delegation
+Memoization
+Floating Point Precision Issues
+Temporal Dead Zone (TDZ)
+Private Fields in Classes
+Tagged Template Literals
+Object.freeze vs Object.seal
+Event Bubbling & Capturing
+Pure vs Impure Functions
+First-class and Higher-order Functions
+Function Composition
+Factory Functions
+Prototype Chain and __proto__
+Object.create() and Inheritance
+Polyfills and Transpilers
+Shadowing Variables
+Strict Mode ('use strict')
+Event Loop Phases (Macro vs Microtasks)
+Script Loading (async vs defer)
+Execution Context & Lexical Scope
+Garbage Collection
+Optional Parameters and Default Values
+Dynamic vs Static Typing
+NaN and isNaN() Behavior
+Falsy and Truthy Values
+Intl API (Internationalization)
+Weak References
+BigInt
+Temporal API (Date Improvements - upcoming)
