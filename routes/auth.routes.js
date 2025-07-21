@@ -12,6 +12,6 @@ authRouter.post('/register', upload.none(), signUp);
 authRouter.post('/logout', authenticate, logout);
 authRouter.get('/me', authenticate, profile);
 authRouter.post('/change-profile-deatils', authenticate, changeProfileDetails);
-authRouter.post('/google/jwt-process', loginWithGoogle);
+authRouter.post('/google/jwt-process', upload.none(), loginWithGoogle);
 
 export default authRouter;

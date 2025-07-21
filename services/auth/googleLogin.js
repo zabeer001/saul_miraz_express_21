@@ -6,6 +6,8 @@ import { JWT_EXPIRES_IN, JWT_SECRET } from '../../config/env.js';
 
 export const googleLogin = async (body) => {
     try {
+        console.log('hello');
+        
         const { email, name, googleAuthentication } = body;
 
         if (!email || !googleAuthentication) {
