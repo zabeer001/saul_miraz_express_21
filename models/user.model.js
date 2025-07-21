@@ -16,9 +16,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: function () {
-            return !this.googleAuth;
-        },
+       
         minlength: 6, // optional: for basic validation
     },
     phone: {
