@@ -6,11 +6,11 @@ export const orderIndexService = async (req) => {
   try {
     const params = req.query;
     const search = (params.search || params.serach)?.trim() || '';
-    const status = params.status;
-    const id = params.id;
+    const status = params.status?.trim();
+    const id = params.id?.trim();
 
-    const page = Number.isInteger(parseInt(params?.page, 10)) ? parseInt(params.page, 10) : 1;
-    const per_page = Number.isInteger(parseInt(params?.paginate_count, 10)) ? parseInt(params.paginate_count, 10) : 10;
+    const page = parseInt(params.page, 10) || 1;
+    const per_page = parseInt(params.paginate_count, 10) || 10;
 
     const query = {};
 
@@ -24,24 +24,33 @@ export const orderIndexService = async (req) => {
       query.user_id = authUser._id;
     }
 
+    // Search by ID or order_summary
     if (search) {
       query.$or = [];
+
+      // Search by Order ID
       if (mongoose.Types.ObjectId.isValid(search)) {
-        query.$or.push({ _id: mongoose.Types.ObjectId(search) });
+        query.$or.push({ _id: new mongoose.Types.ObjectId(search) });
       }
-      query.$or.push({ order_summary: { $regex: search, $options: "i" } });
-    }
 
-    if (status) {
-      query.status = new RegExp(`^${status}$`, 'i'); // case-insensitive exact match
-    }
+      // Search by email inside shipping_details JSON string
+      query.$or.push({ shipping_details: { $regex: `"email":"[^"]*${search}[^"]*"`, $options: "i" } });
 
+      // Search by phone inside shipping_details JSON string
+      query.$or.push({ shipping_details: { $regex: `"phone":"[^"]*${search}[^"]*"`, $options: "i" } });
+    }
+    // Direct ID filter
     if (id) {
       if (mongoose.Types.ObjectId.isValid(id)) {
-        query._id = mongoose.Types.ObjectId(id);
+        query._id = new mongoose.Types.ObjectId(id);
       } else {
         throw new Error("Invalid order ID");
       }
+    }
+
+    // Status filter
+    if (status) {
+      query.status = new RegExp(`^${status}$`, 'i'); // case-insensitive match
     }
 
     const options = {
@@ -57,7 +66,7 @@ export const orderIndexService = async (req) => {
 
     const paginationResult = await Order.paginate(query, options);
 
-    // Rename user_id to customer for clarity
+    // Rename user_id to customer
     paginationResult.docs = paginationResult.docs.map(order => {
       order.customer = order.user_id;
       delete order.user_id;
