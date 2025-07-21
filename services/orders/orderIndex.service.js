@@ -11,6 +11,7 @@ export const orderIndexService = async (req) => {
 
     const page = parseInt(params.page, 10) || 1;
     const per_page = parseInt(params.paginate_count, 10) || 10;
+    const payment_status = params.payment_status?.trim();
 
     const query = {};
 
@@ -51,6 +52,10 @@ export const orderIndexService = async (req) => {
     // Status filter
     if (status) {
       query.status = new RegExp(`^${status}$`, 'i'); // case-insensitive match
+    }
+
+     if (payment_status) {
+      query.payment_status = new RegExp(`^${payment_status}$`, 'i'); // case-insensitive match
     }
 
     const options = {
