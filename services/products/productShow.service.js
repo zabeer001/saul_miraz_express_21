@@ -16,9 +16,11 @@ export const productShowService = async (id) => {
       };
     }
 
-    // Fetch reviews for this product
+    // Fetch the latest 5 reviews for this product
     const reviews = await Review.find({ product_id: id })
-      .populate("user") // populate user data via virtual
+      .populate("user") // populate user data
+      .sort({ createdAt: -1 }) // latest reviews first
+      .limit(5) // only 5 reviews
       .lean();
 
     // Use aggregation to calculate average rating & total reviews

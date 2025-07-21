@@ -1,6 +1,6 @@
 import { formatPaginationResponse } from '../helpers/formatPaginationResponse.js';
+import Product from '../models/product.model.js';
 import Review from '../models/review.model.js';
-import mongoose from 'mongoose';
 
 // POST /reviews
 export const reviewStore = async (req, res) => {
@@ -8,22 +8,49 @@ export const reviewStore = async (req, res) => {
     const { product_id, comment, rating } = req.body;
     const user_id = req.authUser;
 
-    if (!product_id || !comment || !rating) {
-      return res.status(400).json({ success: false, message: 'All fields are required.' });
+    // Parse rating as number
+    const parsedRating = Number(rating);
+
+    if (!product_id || !comment || !rating || isNaN(parsedRating)) {
+      return res.status(400).json({ success: false, message: 'All fields are required and rating must be a number.' });
     }
 
+    // Check if product exists
+    const product = await Product.findById(product_id);
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found.' });
+    }
+
+    // Create the review
     const review = await Review.create({
       product_id,
       user_id,
       comment,
-      rating,
+      rating: parsedRating,
     });
+
+    // Initialize rating and total_review if they are not numbers
+    product.total_review = Number(product.total_review) || 0;
+    product.rating = Number(product.rating) || 0;
+
+    // If no review exists, rating becomes the first review's rating
+    if (product.total_review === 0) {
+      product.total_review = 1;
+      product.rating = parsedRating;
+    } else {
+      // Update rating using weighted average
+      product.total_review += 1;
+      product.rating = ((product.rating * (product.total_review - 1)) + parsedRating) / product.total_review;
+    }
+
+    await product.save();
 
     return res.status(201).json({ success: true, data: review });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // GET /reviews
 export const reviewIndex = async (req, res) => {

@@ -53,6 +53,14 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: 'regular',
     },
+    rating: {
+        type: Number,
+        default: 'regular',
+    },
+    total_review: {
+        type: Number,
+        default: 'regular',
+    },
     sales: {
         type: Number,
         default: 0,
