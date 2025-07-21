@@ -16,6 +16,10 @@ export const orderStatsService = async () => {
     // Count total customers (assuming unique user_id per order)
     const customerCount = await Order.distinct('user_id').then(ids => ids.length);
 
+    // Count pending and cancelled orders
+    const pendingOrders = await Order.countDocuments({ status: 'pending' });
+    const cancelledOrders = await Order.countDocuments({ status: 'cancelled' });
+
     // Calculate total revenue and average order value
     const revenueAgg = await Order.aggregate([
       {
@@ -73,46 +77,45 @@ export const orderStatsService = async () => {
     }
 
     // 📊 Category-wise Sales
-const categoryWiseSalesAgg = await OrderProduct.aggregate([
-  {
-    $lookup: {
-      from: 'products',
-      localField: 'product_id',
-      foreignField: '_id',
-      as: 'product'
-    }
-  },
-  { $unwind: '$product' },
-  {
-    $lookup: {
-      from: 'categories',
-      localField: 'product.category_id',
-      foreignField: '_id',
-      as: 'category'
-    }
-  },
-  { $unwind: '$category' },
-  {
-    $group: {
-      _id: '$product.category_id',
-      category: { $first: '$category.name' },
-      total_sales: {
-        $sum: { $multiply: ['$product.price', '$quantity'] }
+    const categoryWiseSalesAgg = await OrderProduct.aggregate([
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'product_id',
+          foreignField: '_id',
+          as: 'product'
+        }
+      },
+      { $unwind: '$product' },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'product.category_id',
+          foreignField: '_id',
+          as: 'category'
+        }
+      },
+      { $unwind: '$category' },
+      {
+        $group: {
+          _id: '$product.category_id',
+          category: { $first: '$category.name' },
+          total_sales: {
+            $sum: { $multiply: ['$product.price', '$quantity'] }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          category: 1,
+          total_sales: { $round: ['$total_sales', 2] }
+        }
+      },
+      {
+        $sort: { total_sales: -1 }
       }
-    }
-  },
-  {
-    $project: {
-      _id: 0,
-      category: 1,
-      total_sales: { $round: ['$total_sales', 2] }
-    }
-  },
-  {
-    $sort: { total_sales: -1 }
-  }
-]);
-
+    ]);
 
     // ✅ Final Response
     return {
@@ -120,6 +123,8 @@ const categoryWiseSalesAgg = await OrderProduct.aggregate([
       monthly_sales,
       category_wise_sales: categoryWiseSalesAgg,
       totalOrders,
+      pendingOrders,
+      cancelledOrders,
       customerCount,
       revenue: revenue.toFixed(2),
       averageOrderValue

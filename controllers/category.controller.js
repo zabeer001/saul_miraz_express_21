@@ -4,6 +4,7 @@ import { updateService } from '../services/categories/update.service.js';
 import { destroyService } from '../services/categories/destroy.service.js';
 import { storeService } from '../services/categories/store.service.js';
 import Category from '../models/category.model.js';
+import Product from '../models/product.model.js';
 
 export const categoryStore = async (req, res) => {
   try {
@@ -112,6 +113,36 @@ export const categoryDestroy = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Failed to delete category',
+      error: error.message,
+    });
+  }
+};
+
+
+
+export const categoryStats = async (req, res) => {
+  try {
+    // Total number of categories
+    const totalCategories = await Category.countDocuments();
+
+    // Total number of products
+    const totalProducts = await Product.countDocuments();
+
+    // Average products per category (avoid division by zero)
+    const averageProductsPerCategory = totalCategories > 0
+      ? (totalProducts / totalCategories).toFixed(2)
+      : 0;
+
+    return res.status(200).json({
+      success: true,
+      totalCategories,
+      averageProductsPerCategory,
+    });
+  } catch (error) {
+    console.error("Error in categoryStats:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching category statistics",
       error: error.message,
     });
   }

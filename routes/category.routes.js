@@ -5,7 +5,8 @@ import {
   categoryStore,
   categoryShow,
   categoryUpdate,
-  categoryDestroy
+  categoryDestroy,
+  categoryStats
 } from '../controllers/category.controller.js';
 import { authenticate } from '../middleware/authMiddleware.js';
 import { isAdmin } from '../middleware/adminMiddleware.js';
@@ -15,6 +16,9 @@ const categoryRouter = express.Router();
 
 // Routes
 categoryRouter.get('/by-type', categoryIndexByType);
+categoryRouter.get('/stats', categoryStats);
+
+
 
 categoryRouter.post(
   '/',
@@ -41,5 +45,7 @@ categoryRouter.delete(
   isAdmin,
   categoryDestroy // using 'destroy' to avoid 'delete' keyword conflict
 );
+
+
 
 export default categoryRouter;

@@ -86,3 +86,45 @@ export const conatctMail = async (name, email, how_can_we_help) => {
         };
     }
 };
+
+
+export const registerMail = async (email) => {
+    try {
+       
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Recipient email ('email') is required.",
+            });
+        }
+
+        const templatePath = path.resolve(__dirname, "../resources/emailTemplates/registerTemplate.html");
+        const htmlContent = await fs.readFile(templatePath, "utf-8");
+
+        const info = await sendMail({
+            to: email,
+            subject: "Registration Done",
+            text: "Thanks for registering to Seoul Mirage!",
+            html: htmlContent,
+        });
+        // const infoToCompany = await sendMail({
+        //     to: EMAIL_USER,
+        //     subject: "Subscription done",
+        //     text: "Thanks for subscribing to Seoul Mirage!",
+        //     html: htmlContent,
+        // });
+
+        return res.json({
+            success: true,
+            message: `Email sent successfully to ${email}!`,
+        });
+    } catch (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to send email",
+            error: error.message,
+        });
+    }
+};

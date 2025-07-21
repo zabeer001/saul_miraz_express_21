@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_EXPIRES_IN, JWT_SECRET } from '../../config/env.js';
 import { hashPassword } from '../../helpers/hashPassowrd.js';
 import User from '../../models/user.model.js';
+import { registerMail } from '../../functionalController/emailNotificationController.js';
 
 
 
@@ -33,6 +34,8 @@ export const signUpService = async ({ name, email, password }) => {
     });
 
     await session.commitTransaction();
+
+    await registerMail(email);
 
     return {
       user: {
