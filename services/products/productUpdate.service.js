@@ -31,7 +31,6 @@ export const productUpdateService = async (req, productId) => {
     cost_price,
     stock_quantity,
     sales,
-    existing_media
   } = body;
 
   try {
@@ -108,10 +107,7 @@ export const productUpdateService = async (req, productId) => {
 
     // Apply non-undefined fields to the product using the helper
     updateModelFields(product, fieldsToUpdate);
-    console.log(existing_media);
-
-    existing_media = JSON.parse(existing_media || "[]");
-
+    const existing_media = JSON.parse(req.body.existing_media || "[]");
     // Push existing media (if provided)
     if (Array.isArray(existing_media)) {
       existing_media.forEach(path => {
