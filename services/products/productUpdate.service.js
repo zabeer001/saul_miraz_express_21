@@ -16,7 +16,7 @@ export const productUpdateService = async (req, productId) => {
   const body = req.body || {};
   const files = req.files || {};
 
-  // Fetch product by ID from the database 
+  // Fetch product by ID from the database
   const product = await Product.findById(productId);
   if (!product) throw new Error('Product not found');
 
