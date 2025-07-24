@@ -110,7 +110,7 @@ export const productUpdateService = async (req, productId) => {
     updateModelFields(product, fieldsToUpdate);
     console.log(existing_media);
 
-existing_media = JSON.parse(existing_media || "[]");
+    existing_media = JSON.parse(existing_media || "[]");
 
     // Push existing media (if provided)
     if (Array.isArray(existing_media)) {
