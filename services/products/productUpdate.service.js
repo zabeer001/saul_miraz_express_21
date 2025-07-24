@@ -31,7 +31,7 @@ export const productUpdateService = async (req, productId) => {
     cost_price,
     stock_quantity,
     sales,
-        existing_media
+    existing_media
   } = body;
 
   try {
@@ -71,8 +71,8 @@ export const productUpdateService = async (req, productId) => {
     //     "_id": "686fd4e1c0581ee4916e8a38"
     //   }
     // ],
-    
-   
+
+
     if (files['media']) {
       product.media = await updateMultipleMedia(files['media'], product.media); // //takes all the files in meadia and takes media of previous ones.. then delete the previous ones and then uload the new ones. 
     }
@@ -87,12 +87,12 @@ export const productUpdateService = async (req, productId) => {
 
     if (stock_quantity > 10) {
       status = "available";
-    } else if ( Number(stock_quantity) == 0) {
+    } else if (Number(stock_quantity) == 0) {
       status = "out_of_stock";
     } else if (stock_quantity > 0 && stock_quantity <= 10) {
       status = "low_stock";
     }
-    
+
     const fieldsToUpdate = {
       name,
       description,
@@ -108,6 +108,8 @@ export const productUpdateService = async (req, productId) => {
 
     // Apply non-undefined fields to the product using the helper
     updateModelFields(product, fieldsToUpdate);
+    console.log(existing_media);
+
 
 
     // Push existing media (if provided)
@@ -116,8 +118,7 @@ export const productUpdateService = async (req, productId) => {
         product.media.push({
           file_path: path,
           alt: "",
-          order: product.media.length,
-          _id: Date.now().toString()
+          order: product.media.length
         });
       });
     }
