@@ -10,30 +10,26 @@ import { registerMail } from '../../functionalController/emailNotificationContro
 
 
 export const signUpService = async ({ name, email, password }) => {
-  const session = await mongoose.startSession();
+
+  // console.log('SignUp Service:', { name, email, password });
 
   try {
-    session.startTransaction();
-
     if (!name || !email || !password) {
       throw new Error('Name, email, and password are required.');
     }
 
-    const existingUser = await User.findOne({ email }).session(session);
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       throw new Error('Email already in use');
     }
 
     const hashedPassword = await hashPassword(password);
 
-    const user = new User({ name, email, password: hashedPassword });
-    await user.save({ session });
+    const user = await User.create({ name, email, password: hashedPassword });
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
     });
-
-    await session.commitTransaction();
 
     await registerMail(email);
 
@@ -46,9 +42,6 @@ export const signUpService = async ({ name, email, password }) => {
       token,
     };
   } catch (error) {
-    await session.abortTransaction();
     throw error;
-  } finally {
-    session.endSession();
   }
 };

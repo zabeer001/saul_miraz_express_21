@@ -6,17 +6,23 @@ import { changeProfileDetailsService } from '../services/auth/changeProfileDetai
 import { resetPasswordAuthUserService } from '../services/auth/resetPasswordAuthUserService.js';
 
 export const signUp = async (req, res) => {
+
+  console.log('SignUp Request:', req.body);
+
   try {
     const result = await signUpService(req.body);
+
+    // console.log('User registered successfully:', result);
     return res.status(201).json({
       message: 'User registered successfully',
-      ...result,
+     ...result,
     });
+
   } catch (error) {
     console.error('Signup error:', error);
     return res.status(400).json({
       message: 'Signup failed',
-      error: error.message,
+      error: error.message || 'Something went wrong',
     });
   }
 };
